@@ -1,0 +1,26 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_tags %}
+
+{% block content %}
+
+{% if 'create' in request.path %}
+    {% set_var "Create" as operation %}
+    {% set_var request.path|cut:'/'|cut:'create'|cut:'edit'|capfirst as type %}
+{% elif 'edit' in request.path %}
+    {% set_var "Edit" as operation %}
+    {% if object.type == 'NWS' %}
+        {% set_var "News" as type %}
+    {% elif object.type == 'ART' %}
+        {% set_var "Article" as type %}
+    {% endif %}
+{% endif %}
+
+<h1>{{ operation }} {{ type }}</h1>
+<hr>
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Save" />
+</form>
+{% endblock content %}

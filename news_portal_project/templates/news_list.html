@@ -1,0 +1,61 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %}
+{% load custom_tags %}
+
+{% block title %}
+All posts
+{% endblock title %}
+
+{% block content %}
+    {% block content_specific %}
+        <h1>All News and Articles</h1>
+        <h3>Currently showing {{ page_obj.start_index }}-{{ page_obj.end_index }}
+            of {{ page_obj.paginator.count }} posts in total</h3>
+
+        {# Ссылка на страницу поиска #}
+        <a href="search">Search by filter</a>
+    {% endblock content_specific %}
+    <hr>
+    {% if news_list %}
+        <table>
+            <tr>
+                <td>Headline</td>
+                <td>Publication Date</td>
+                <td>Preview</td>
+                <td>Author</td>
+            </tr>
+
+            {% for n in news_list %}
+            <tr>
+                <td><a href="{{ n.pk }}">{{ n.name|censor }}</a> </td>
+                <td>{{ n.date|date:'d M Y' }}</td>
+                <td>{{ n.text|censor|truncatewords:20 }}</td>
+                <td>{{ n.author.user.username }}</td>
+            </tr>
+            {% endfor %}
+
+        </table>
+    {% else %}
+        <h2>It is quite empty here...</h2>
+    {% endif %}
+
+    {% if page_obj.has_previous %}
+        <a href="?{% url_replace page=1 %}">1</a>
+        {% if page_obj.previous_page_number != 1 %}
+            ...
+            <a href="?page={% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+        {% endif %}
+    {% endif %}
+
+    {{ page_obj.number }}
+
+    {% if page_obj.has_next %}
+        <a href="?page={% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+        {% if paginator.num_pages != page_obj.next_page_number %}
+            ...
+            <a href="?page={% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+        {% endif %}
+    {% endif %}
+
+{% endblock content %}
